@@ -48,9 +48,28 @@
      <property name="frameShadow">
       <enum>QFrame::Plain</enum>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout">
-      <item>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="0" column="2">
+       <widget class="QLabel" name="atmos_help">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="pixmap">
+         <pixmap>../../assets/icons/question.png</pixmap>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
        <widget class="QLabel" name="atmos_title">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="font">
          <font>
           <pointsize>18</pointsize>
@@ -65,84 +84,17 @@
         </property>
        </widget>
       </item>
-      <item>
+      <item row="2" column="0" colspan="3">
        <widget class="QLabel" name="water_temp_lbl">
         <property name="text">
          <string>Water Temperature:    52°F</string>
         </property>
        </widget>
       </item>
-      <item>
+      <item row="3" column="0" colspan="3">
        <widget class="QLabel" name="air_temp_lbl">
         <property name="text">
          <string>Air Temperature:    55°F</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="1" column="2" rowspan="2">
-    <widget class="QFrame" name="swell_frame">
-     <property name="frameShape">
-      <enum>QFrame::Box</enum>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout_3">
-      <item>
-       <widget class="QLabel" name="swell_title">
-        <property name="font">
-         <font>
-          <pointsize>18</pointsize>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="text">
-         <string>Swell</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="sigWaveHT_lbl">
-        <property name="text">
-         <string>Significant Wave Height: 7.4 ft</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="dom_swl_period_lb">
-        <property name="text">
-         <string>Dominant Swell Period: 11 seconds</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="sec_swl_per_lbl">
-        <property name="text">
-         <string>Secondary Swell Period: 8 seconds</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="pr_swl_dir_lbl">
-        <property name="text">
-         <string>Primary Swell Direction:  S</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="sec_swl_dir_lbl">
-        <property name="text">
-         <string>Secondary Swell Direction:  SW</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="steepness_lbl">
-        <property name="text">
-         <string>Swell Steepness:    STEEP</string>
         </property>
        </widget>
       </item>
@@ -157,8 +109,42 @@
      <property name="frameShadow">
       <enum>QFrame::Plain</enum>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout_2">
-      <item>
+     <layout class="QGridLayout" name="gridLayout_3">
+      <item row="4" column="0">
+       <widget class="QLabel" name="wind_spd_lbl">
+        <property name="text">
+         <string>Wind Speed:     12 mph</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0">
+       <widget class="QLabel" name="wind_gust_lbl">
+        <property name="text">
+         <string>Wind Gust:     18 mph</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="wind_dir_lbl">
+        <property name="text">
+         <string>Wind Direction: WNW</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="3">
+       <widget class="QLabel" name="wind_help">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="pixmap">
+         <pixmap>../../assets/icons/question.png</pixmap>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0" colspan="3">
        <widget class="QLabel" name="wind_title">
         <property name="font">
          <font>
@@ -171,27 +157,6 @@
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="wind_dir_lbl">
-        <property name="text">
-         <string>Wind Direction: WNW</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="wind_spd_lbl">
-        <property name="text">
-         <string>Wind Speed:     12 mph</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="wind_gust_lbl">
-        <property name="text">
-         <string>Wind Gust:     18 mph</string>
         </property>
        </widget>
       </item>
@@ -212,6 +177,86 @@
      <property name="pixmap">
       <pixmap>../../assets/icons/buoy64.png</pixmap>
      </property>
+    </widget>
+   </item>
+   <item row="1" column="2" rowspan="2">
+    <widget class="QFrame" name="swell_frame">
+     <property name="frameShape">
+      <enum>QFrame::Box</enum>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_4">
+      <item row="2" column="0" colspan="3">
+       <widget class="QLabel" name="dom_swl_period_lb">
+        <property name="text">
+         <string>Dominant Swell Period: 11 seconds</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="sigWaveHT_lbl">
+        <property name="text">
+         <string>Significant Wave Height: 7.4 ft</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="pr_swl_dir_lbl">
+        <property name="text">
+         <string>Primary Swell Direction:  S</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0">
+       <widget class="QLabel" name="sec_swl_dir_lbl">
+        <property name="text">
+         <string>Secondary Swell Direction:  SW</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QLabel" name="swell_help">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="pixmap">
+         <pixmap>../../assets/icons/question.png</pixmap>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0" colspan="3">
+       <widget class="QLabel" name="sec_swl_per_lbl">
+        <property name="text">
+         <string>Secondary Swell Period: 8 seconds</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="0">
+       <widget class="QLabel" name="steepness_lbl">
+        <property name="text">
+         <string>Swell Steepness:    STEEP</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0" colspan="2">
+       <widget class="QLabel" name="swell_title">
+        <property name="font">
+         <font>
+          <pointsize>18</pointsize>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>Swell</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </item>
   </layout>

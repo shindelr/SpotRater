@@ -127,10 +127,7 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="QLabel" name="label">
-       <property name="cursor">
-        <cursorShape>WhatsThisCursor</cursorShape>
-       </property>
+      <widget class="QLabel" name="tide_chart">
        <property name="text">
         <string/>
        </property>
