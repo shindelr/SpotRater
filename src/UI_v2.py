@@ -1,13 +1,18 @@
 # Author: Robin Shindelman
-# Last Mod: 2024-02-09, 2pm, Robin
+# Last Mod: 2024-03-01, 8am, Robin
 
 
+import zmq
+from PIL import Image
+# PyQt Dependencies
 from PyQt5.QtWidgets import QWidget, QStackedWidget, QMainWindow, QApplication, QToolTip
-from PyQt5.QtGui import QColor, QPalette
+from PyQt5.QtGui import QColor, QPalette, QPixmap
 from PyQt5.QtCore import Qt
-
+# UI forms
 from homeWidg_v2 import Ui_Form as mainHomeWidget
 from buoyDataWidg import Ui_Form as buoyDataWidg
+from agCamWidg import Ui_Frame as agCamWidg
+
 
 
 class MainWindow(QMainWindow):
@@ -18,8 +23,17 @@ class MainWindow(QMainWindow):
         self.widg_stack = QStackedWidget()
         self.home_page = HomePage()
         self.buoy_page = buoyDataPage()
+        self.ag_cam_page = agCamWPage()
 
         self.setupUi()
+
+        # set up PyZMQ socket for communication with image scraper.
+        PORT = "5555"
+        context = zmq.Context()
+        print("connecting to server")
+        self.socket = context.socket(zmq.REQ)
+        self.socket.connect("tcp://localhost:" + PORT)
+
 
 
     def setupUi(self):
@@ -45,30 +59,57 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.widg_stack)
         self.resize(900, 500)
 
-
     def stack_the_widgets(self):
         """Initializes all widgets into the stack."""
         self.widg_stack.addWidget(self.home_page)
         self.widg_stack.addWidget(self.buoy_page)
+        self.widg_stack.addWidget(self.ag_cam_page)
+
 
 
     def nav_logic(self):
         """Route all navigation button signals to correct places."""
         # SB button handling
         self.home_page.toBuoyData.clicked.connect(self.navigate_to_buoy)
+        self.home_page.toCamImage.clicked.connect(self.navigate_to_cam)
         self.buoy_page.back_button.clicked.connect(self.close_aux_widg)
+        self.ag_cam_page.back_button.clicked.connect(self.close_aux_widg)
+
+
+    def navigate_to_cam(self):
+        """Set widget stack to show agate beach cam"""
+        self.widg_stack.setCurrentWidget(self.ag_cam_page)
+        self.setCentralWidget(self.widg_stack)
+        self.image_scraper()
+        self.ag_cam_page.camImage.setPixmap(QPixmap("src/uiFiles/../../image-scraper-master/images/agate_beach.jpg"))
 
 
     def navigate_to_buoy(self):
-        """Set widget stack to show south beach info page."""
+        """Set widget stack to show buoy info page."""
         self.widg_stack.setCurrentWidget(self.buoy_page)
-        self.setCentralWidget(self.widg_stack) 
+        self.setCentralWidget(self.widg_stack)
 
 
     def close_aux_widg(self):
         """Return to home from any auxillary widget page."""
         self.widg_stack.setCurrentWidget(self.home_page)
         self.setCentralWidget(self.widg_stack)
+
+    
+    def image_scraper(self):
+        """Communicate with image scraping service. Service must be running."""
+        # Send request for image and then wait to receive it.
+        self.socket.send(b'cam_image')
+        print('Requesting image')
+        image = self.socket.recv()
+        print('Received image')
+        path = '/Users/robinshindelman/repos/school/361.SE/SpotRater/image-scraper-master/images/agate_beach.jpg'
+        with open(path, 'wb') as img:
+            byte_array = bytearray(image)
+            img.write(byte_array)
+        with Image.open(path) as img:
+            resize = img.resize((900,500))
+            resize.save(path)
 
 
     def tool_tips(self):
@@ -178,6 +219,19 @@ class buoyDataPage(QWidget, buoyDataWidg):
         self.wind_frame.setStyleSheet("background-color:rgb(241,242,242)")
         self.swell_frame.setStyleSheet("background-color:rgb(241,242,242)")
 
+
+class agCamWPage(QWidget, agCamWidg):
+    def __init__(self):
+        super().__init__()
+        self.setupUi(self)
+
+        # Background Color:
+        self.setAutoFillBackground(True)
+        palette = self.palette()
+        palette.setColor(QPalette.Window, QColor(232, 243, 247))
+        self.setPalette(palette)
+
+        
 
 if __name__ == '__main__':
     app = QApplication([])
