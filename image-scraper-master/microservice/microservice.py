@@ -3,12 +3,18 @@ import urllib.request
 import zmq
 import shutil
 import pathlib
+# import certifi
+# import ssl
+
+
+# ssl._create_default_https_context = ssl.create_default_context
+# ssl.create_default_context(cafile=certifi.where())
 
 # URL of image to fetch
 URL = "https://camstills.cdn-surfline.com/wc-agatebeachor/latest_full.jpg"
 
 # directory where image will be saved (if different from the directory this file is in)
-WORKING_DIRECTORY = "./microservice"
+WORKING_DIRECTORY = "/Users/robinshindelman/repos/school/361.SE/SpotRater/image-scraper-master/images"
 os.chdir(WORKING_DIRECTORY)
 
 # filepath where downloaded image will be saved

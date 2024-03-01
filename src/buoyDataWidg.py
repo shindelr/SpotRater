@@ -145,6 +145,10 @@ class Ui_Form(object):
         self.swell_title.setObjectName("swell_title")
         self.gridLayout_4.addWidget(self.swell_title, 0, 0, 1, 2)
         self.gridLayout.addWidget(self.swell_frame, 1, 2, 2, 1)
+        self.label = QtWidgets.QLabel(Form)
+        self.label.setAlignment(QtCore.Qt.AlignCenter)
+        self.label.setObjectName("label")
+        self.gridLayout.addWidget(self.label, 0, 1, 1, 2)
 
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
@@ -166,3 +170,4 @@ class Ui_Form(object):
         self.sec_swl_per_lbl.setText(_translate("Form", "Secondary Swell Period: 8 seconds"))
         self.steepness_lbl.setText(_translate("Form", "Swell Steepness:    STEEP"))
         self.swell_title.setText(_translate("Form", "Swell"))
+        self.label.setText(_translate("Form", "<html><head/><body><p><span style=\" font-size:24pt; font-weight:700;\">Current Buoy Data</span></p></body></html>"))

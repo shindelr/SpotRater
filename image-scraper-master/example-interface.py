@@ -6,10 +6,10 @@ import subprocess
 MICROSERVICE_FILEPATH = "./microservice/microservice.py"
 
 # image save location (relative filepath)
-IMAGE_FILEPATH = "./agate_beach.jpg"
+IMAGE_FILEPATH = "./images/agate_beach.jpg"
 
 # starts the microservice in another process
-subprocess.Popen("Python " + MICROSERVICE_FILEPATH)
+# subprocess.Popen("Python " + MICROSERVICE_FILEPATH)
 
 # set up PyZMQ socket
 PORT = "5555"
