@@ -1,3 +1,5 @@
+# Fake tide chart generator
+
 import matplotlib.pyplot as plt
 import numpy as np
 

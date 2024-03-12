@@ -3,12 +3,7 @@ import urllib.request
 import zmq
 import shutil
 import pathlib
-# import certifi
-# import ssl
 
-
-# ssl._create_default_https_context = ssl.create_default_context
-# ssl.create_default_context(cafile=certifi.where())
 
 # URL of image to fetch
 URL = "https://camstills.cdn-surfline.com/wc-agatebeachor/latest_full.jpg"
@@ -32,6 +27,8 @@ socket.bind("tcp://*:" + PORT)
 while True:
     message = socket.recv()
     if message.decode() == "cam_image":
+        print('Request Received.')
+        print('Scraping now.')
         image_to_send = DOWNLOAD_IMAGE_FILEPATH
         try:
             # fetch image
@@ -47,6 +44,7 @@ while True:
             message_to_send = bytearray(f.read())
             socket.send(message_to_send)
             f.close()
+            print('Image Sent.')
 
             # remove downloaded image
             if os.path.isfile(DOWNLOAD_IMAGE_FILEPATH):

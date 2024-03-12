@@ -4,6 +4,7 @@
 
 import zmq
 from PIL import Image
+from requests import get
 # PyQt Dependencies
 from PyQt5.QtWidgets import QWidget, QStackedWidget, QMainWindow, QApplication, QToolTip
 from PyQt5.QtGui import QColor, QPalette, QPixmap
@@ -219,6 +220,11 @@ class buoyDataPage(QWidget, buoyDataWidg):
         self.wind_frame.setStyleSheet("background-color:rgb(241,242,242)")
         self.swell_frame.setStyleSheet("background-color:rgb(241,242,242)")
 
+        # NOAA stuff
+        self.token = 'WBtFHGISuLrFoPdVSVkEmLFzjhpWveRa'
+        self.buoy_id = '46050'
+        self.endpoint = "https://www.ncei.noaa.gov/cdo-web/api/v2/data?datasetid="
+
 
 class agCamWPage(QWidget, agCamWidg):
     def __init__(self):
@@ -231,10 +237,17 @@ class agCamWPage(QWidget, agCamWidg):
         palette.setColor(QPalette.Window, QColor(232, 243, 247))
         self.setPalette(palette)
 
-        
 
-if __name__ == '__main__':
+def run_app():
+    """
+    Generate an instance of QApplication and a MainWindow for it to run in.
+    Starts the Surfing App.
+    """    
     app = QApplication([])
     window = MainWindow()
     window.show()
     app.exec()
+
+
+if __name__ == '__main__':
+    run_app()
