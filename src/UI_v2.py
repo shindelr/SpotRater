@@ -2,9 +2,11 @@
 # Last Mod: 2024-03-01, 8am, Robin
 
 
+# Communication & data manipulation 
 import zmq
 from PIL import Image
-from requests import get
+from pandas import read_csv
+
 # PyQt Dependencies
 from PyQt5.QtWidgets import QWidget, QStackedWidget, QMainWindow, QApplication, QToolTip
 from PyQt5.QtGui import QColor, QPalette, QPixmap
@@ -180,12 +182,19 @@ class MainWindow(QMainWindow):
         - Swell Steepness: A measurement of the ratio between wave length and \n
         wave height. \n
         """
+        buoy_button_tip = """Click me to go see the buoy data. There will be
+        a back button to return you to this page."""
+        cam_button_tip = """Click me to go see a picture of the surf at Agate Beach
+        right now. The image is updated every 5 minutes. There will be
+        a back button to return you to this page."""
 
         self.home_page.help_lbl.setToolTip(rating_tip)
         self.home_page.tide_chart.setToolTip(tide_tip)
         self.buoy_page.atmos_help.setToolTip(atmos_tip)
         self.buoy_page.wind_help.setToolTip(wind_tip)
         self.buoy_page.swell_help.setToolTip(swell_tip)
+        self.home_page.toBuoyData.setToolTip(buoy_button_tip)
+        self.home_page.toCamImage.setToolTip(cam_button_tip)
 
 
 class HomePage(QWidget, mainHomeWidget):
@@ -220,10 +229,62 @@ class buoyDataPage(QWidget, buoyDataWidg):
         self.wind_frame.setStyleSheet("background-color:rgb(241,242,242)")
         self.swell_frame.setStyleSheet("background-color:rgb(241,242,242)")
 
-        # NOAA stuff
-        self.token = 'WBtFHGISuLrFoPdVSVkEmLFzjhpWveRa'
-        self.buoy_id = '46050'
-        self.endpoint = "https://www.ncei.noaa.gov/cdo-web/api/v2/data?datasetid="
+        self.labels = {
+            'WDIR': None,
+            'WSPD': None,
+            'GST':  None,
+            'WVHT': None,
+            'DPD':  None,
+            'APD':  None,
+            'MWD':  None,
+            'ATMP': None,
+            'WTMP': None
+        }
+
+        # Fill current data
+        self.current_data = self.get_NBDC_data()
+        self.populate_fields()
+
+
+    def get_NBDC_data(self):
+        """
+        Retrieve the most recent, complete row of data from buoy number 46050.
+        :return:
+            The cleanest, most recent row of a pandas data frame.
+        """
+        url = 'https://www.ndbc.noaa.gov/data/realtime2/46050.txt'
+        data = read_csv(url, sep='\s+')
+
+        sub_frame = data.iloc[:, :-4]  # Cuts off 'DEWP' 'VIS' 'PTDY' 'TIDE'
+
+        # Tricky boolean mask that returns a complete row of data
+        complete_rows = sub_frame[~sub_frame.isin(['MM']).any(axis=1)]
+
+        return complete_rows.iloc[[1]]
+
+
+    def populate_fields(self):
+        """
+        Set all fields to their current values. At the moment, all values are
+        reported in metric.
+        """
+        self.fill_labels(self.current_data)
+        self.wind_dir_lbl.setText('Wind Direction: ' + self.labels['WDIR'] + ' degrees')
+        self.wind_spd_lbl.setText('Wind Speed: ' + self.labels['WSPD'] + ' m/s')
+        self.wind_gust_lbl.setText(f'Wind Gust: ' + self.labels['GST'] + ' m/s')
+        self.sigWaveHT_lbl.setText(f'Significant Wave Height: ' + self.labels['WVHT'] + ' m')
+        self.dom_swl_period_lb.setText(f'Dominant Period: ' + self.labels['DPD'] + ' sec')
+        self.sec_swl_per_lbl.setText(f'Average Period: ' + self.labels['APD'] + ' sec')
+        self.pr_swl_dir_lbl.setText(f'Primary Swell Direction: ' + self.labels['MWD'] + ' degrees')
+        self.air_temp_lbl.setText(f'Air Temperature: ' + self.labels['ATMP'] + ' C')
+        self.water_temp_lbl.setText(f'Water Temperature: ' + self.labels['WTMP'] + ' C')
+
+
+    def fill_labels(self, data):
+        """Populate the current data dictionary with data."""
+        for key in self.labels:
+            val = str(data[key].values)
+            self.labels[key] = val[2:-2]
 
 
 class agCamWPage(QWidget, agCamWidg):
