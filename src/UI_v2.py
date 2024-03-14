@@ -6,6 +6,7 @@
 import zmq
 from PIL import Image
 from pandas import read_csv
+from pint import UnitRegistry, Quantity
 
 # PyQt Dependencies
 from PyQt5.QtWidgets import QWidget, QStackedWidget, QMainWindow, QApplication, QToolTip
@@ -228,7 +229,7 @@ class buoyDataPage(QWidget, buoyDataWidg):
         self.atmos_frame.setStyleSheet("background-color:rgb(241,242,242)")
         self.wind_frame.setStyleSheet("background-color:rgb(241,242,242)")
         self.swell_frame.setStyleSheet("background-color:rgb(241,242,242)")
-
+        
         self.labels = {
             'WDIR': None,
             'WSPD': None,
@@ -241,6 +242,12 @@ class buoyDataPage(QWidget, buoyDataWidg):
             'WTMP': None
         }
 
+        # Pint library unit converter
+        self.ureg = UnitRegistry()
+        # Separate Temperature Unit Registry
+        self.ureg_temp = UnitRegistry()
+        self.ureg_temp.default_format = '.3f'
+        
         # Fill current data
         self.current_data = self.get_NBDC_data()
         self.populate_fields()
@@ -265,26 +272,111 @@ class buoyDataPage(QWidget, buoyDataWidg):
 
     def populate_fields(self):
         """
-        Set all fields to their current values. At the moment, all values are
-        reported in metric.
+        Set all fields to their current values in US standard units.
         """
-        self.fill_labels(self.current_data)
-        self.wind_dir_lbl.setText('Wind Direction: ' + self.labels['WDIR'] + ' degrees')
-        self.wind_spd_lbl.setText('Wind Speed: ' + self.labels['WSPD'] + ' m/s')
-        self.wind_gust_lbl.setText(f'Wind Gust: ' + self.labels['GST'] + ' m/s')
-        self.sigWaveHT_lbl.setText(f'Significant Wave Height: ' + self.labels['WVHT'] + ' m')
-        self.dom_swl_period_lb.setText(f'Dominant Period: ' + self.labels['DPD'] + ' sec')
+        self.fill_labels_dict(self.current_data)
+
+        # Wind
+        self.wind_dir_lbl.setText('Wind Direction: ' + self.labels['WDIR'])  
+        self.wind_spd_lbl.setText('Wind Speed: ' + self.labels['WSPD'] + ' mph')  
+        self.wind_gust_lbl.setText(f'Wind Gust: ' + self.labels['GST'] + ' mph')  
+
+        # Changed to dom_swell_lbl 
+        self.dom_swell_lbl.setText('Dominant Swell: ' + self.labels['MWD'] + ' ' + self.labels['WVHT'] + ' ft ' + self.labels['DPD'] + ' sec')  
         self.sec_swl_per_lbl.setText(f'Average Period: ' + self.labels['APD'] + ' sec')
-        self.pr_swl_dir_lbl.setText(f'Primary Swell Direction: ' + self.labels['MWD'] + ' degrees')
-        self.air_temp_lbl.setText(f'Air Temperature: ' + self.labels['ATMP'] + ' C')
-        self.water_temp_lbl.setText(f'Water Temperature: ' + self.labels['WTMP'] + ' C')
+
+        # Atmospheric
+        self.air_temp_lbl.setText(f'Air Temperature: ' + self.labels['ATMP'] + ' F')  
+        self.water_temp_lbl.setText(f'Water Temperature: ' + self.labels['WTMP'] + ' F')  
 
 
-    def fill_labels(self, data):
+    def fill_labels_dict(self, data):
         """Populate the current data dictionary with data."""
         for key in self.labels:
             val = str(data[key].values)
-            self.labels[key] = val[2:-2]
+            val = val[2:-2]  # Get rid of brackets
+            if key != 'DPD' and key != 'APD':
+                val = self.conversion(key, float(val))
+            
+            # Set dictionary definition
+            self.labels[key] = str(val)
+
+
+    def conversion(self, key, value):
+        """Route values to appropriate unit conversion functions."""    
+        # Temperature conversion
+        if key == 'ATMP' or key == 'WTMP':
+            return self.celsius_to_fahrenheit(value)
+            
+        # Speed conversion
+        if key == 'WSPD' or key == 'GST':
+            return self.meters_per_sec_to_mph(value)
+
+        # Direction conversion
+        if key == 'WDIR' or key == 'MWD':
+            return self.find_cardinal_direction(value)
+                
+        # Height conversion
+        if key == 'WVHT':
+            return self.meters_to_feet(value)
+
+
+    def find_cardinal_direction(self, value):
+        """
+        Convert direction in degrees to its corresponding cardinal direction.
+        Works by dividing the given value by 45 (since this func uses 8 
+        cardinal directions) and then finding the corresponding index in an
+        array containing all the cardinal directions.
+        :param:
+            - value: float currently representing direction in degrees.
+        :return:
+            A string value representing the direction in cardinal form.
+        """
+        cardinals = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW']
+        res = cardinals[((int(value + 45)) % 360) // 45]
+        return res
+
+
+    def meters_to_feet(self, value):
+        """
+        Conver meters to feet.
+        :param:
+            - value: float currenty in meters
+        :return:
+            - String representing the value in feet.
+        """
+        meters = value * self.ureg.meter
+        feet = meters.to(self.ureg.foot)
+        return str(round(feet.magnitude, 1))
+
+
+    def meters_per_sec_to_mph(self, value):
+        """
+        Convert m/s to mph.
+        :param:
+            - value: float currently in m/s
+        :return:
+            - String representing the value converted to mph.
+        """
+        # value * m/s
+        m_per_sec = value * (self.ureg.meter / self.ureg.second)
+        mph = m_per_sec.to(self.ureg.mile / self.ureg.hour)
+        return str(round(mph.magnitude, 1))
+
+
+    def celsius_to_fahrenheit(self, value):
+        """
+        Convert Celsius values to Fahrenheit.
+        :param:
+            - value: a float currently in degrees Celsius
+        :return:
+            - String representing the value converted to F.
+        """
+        # Convert value to a Pint Quantity object first
+        celsius = Quantity(value, self.ureg_temp.degC)
+        F = celsius.to(self.ureg_temp.degF)
+        # Make the float manageable and convert to a string for displaying later
+        return str(round(F.magnitude, 1))
 
 
 class agCamWPage(QWidget, agCamWidg):
